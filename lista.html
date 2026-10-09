@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1E6A49">
+<title>Lista de la compra</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+.lhead{padding-block:18px 6px;display:grid;gap:4px}
+.lhead h1{font-size:1.55rem;text-wrap:balance}
+.progress{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden;border:1px solid var(--line)}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.lrow{display:grid;grid-template-columns:auto 52px 1fr auto;gap:12px;align-items:center;padding:12px;border-top:1px dashed var(--line);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.citems>.lrow:first-child{border-top:0}
+.lrow .ph{width:52px;height:52px}
+.lrow .check{width:32px;height:32px}
+.lrow .check svg{width:17px;height:17px}
+.lrow.done .check{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.lrow.done .pn{text-decoration:line-through;color:var(--muted)}
+.lrow.done .ph{opacity:.45}
+.lrow .q{font-family:var(--f-num);font-weight:700;font-size:.85rem;color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="lhead">
+    <div class="brand"><h1 id="lname">Lista de la compra</h1><span class="sync" id="sync"><b></b><span>Cargando…</span></span></div>
+    <p class="meta" id="lmeta"></p>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  </header>
+  <main class="panel" id="out">
+    <div class="empty"><strong>Cargando la lista…</strong></div>
+  </main>
+  <div class="panel" id="extra" hidden>
+    <div class="actions">
+      <button class="btn" id="copyText">Copiar como texto</button>
+      <button class="btn" id="uncheck">Desmarcar todo</button>
+    </div>
+    <p class="note">Toca un producto para marcarlo como cogido. Quien te envió la lista ve lo que vas marcando.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<div class="totalbar">
+  <div class="in">
+    <div>
+      <div class="lbl">Total lista</div>
+      <div class="big num" id="tTotal">0,00 €</div>
+    </div>
+    <div class="tsub"><span>Cogido <b class="num" id="tDone">0/0</b></span><span>Falta <b class="num" id="tLeft">0,00 €</b></span></div>
+  </div>
+</div>
+
+<script type="module" src="lista.js"></script>
+</body>
+</html>

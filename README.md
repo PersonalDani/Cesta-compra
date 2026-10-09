@@ -39,6 +39,10 @@ Si una actualización trae menos del 60 % de los productos que había, el script
 
 Toca el indicador «Cesta compartida» arriba a la derecha. Desde ahí puedes copiar el enlace o enviarlo por WhatsApp. Quien lo abra ve y edita la misma cesta y las mismas cestas guardadas, y lo que marque uno lo ve el otro en unos segundos. «Crear enlace nuevo» deja de compartir con quien tenga el anterior.
 
+## Enviar una lista
+
+En la pestaña Cesta, «Enviar como lista» crea una copia de la cesta en ese momento y un enlace a `lista.html`. Quien lo recibe lo abre sin instalar nada y va marcando lo que coge; tú ves el progreso en «Mis cestas → Listas enviadas». Necesita `supabase/listas.sql` ejecutado en Supabase.
+
 ## Limitaciones
 
 - Precios de las tiendas online (Dia, con el código postal por defecto de Madrid). En tienda física pueden variar.

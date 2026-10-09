@@ -5,7 +5,7 @@ const STORES = {
   ahorramas: { name: "Ahorramas", site: "ahorramas.com", url: "https://www.ahorramas.com", c: "var(--ahorramas)", img: i => "https://www.ahorramas.com" + i + "?sw=176&sh=176&sm=fit" }
 };
 const UNITS = { kg: "€/kg", l: "€/l", ud: "€/ud", doc: "€/docena", m: "€/m", lavado: "€/lavado" };
-const LS = { code: "mc:code", state: "mc:state", store: "mc:store", queue: "mc:queue", sort: "mc:sort" };
+const LS = { code: "mc:code", state: "mc:state", store: "mc:store", queue: "mc:queue", sort: "mc:sort", sent: "mc:sent" };
 const REMOTE = !!(SUPABASE_URL && SUPABASE_KEY);
 const POLL_MS = 8000;
 
@@ -284,6 +284,35 @@ function renderSaved() {
   }).join("") + `</div>`;
 }
 
+function baseUrl() { return location.origin + location.pathname.replace(/[^/]*$/, ""); }
+function listLink(c) { return baseUrl() + "lista.html?l=" + c; }
+function sendLinkHTML(c) {
+  const link = listLink(c);
+  return `<div class="code" id="sendLink">${esc(link)}</div>
+    <div class="actions">
+      <button class="btn primary" data-act="copySend" data-link="${esc(link)}">Copiar enlace</button>
+      <a class="btn" href="https://wa.me/?text=${encodeURIComponent("Te paso la lista de la compra: " + link)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+      ${navigator.share ? `<button class="btn" data-act="shareSend" data-link="${esc(link)}">Compartir…</button>` : ""}
+    </div>`;
+}
+async function renderSent() {
+  const out = $("sentOut"); if (!out) return;
+  const sent = lsGet(LS.sent, []);
+  if (!sent.length) { out.innerHTML = ""; return; }
+  out.innerHTML = `<div class="panel"><h3>Listas enviadas</h3>${sent.map(x => `<div class="basket" data-sent="${esc(x.code)}"><div class="hd"><h3>${esc(x.name)}</h3><span class="price">${money(x.total)}</span></div><p class="sentst">${x.n} producto${x.n === 1 ? "" : "s"} · enviada el ${new Date(x.created).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}</p><div class="actions"><a class="btn" href="${esc(listLink(x.code))}" target="_blank" rel="noopener">Abrir lista</a><button class="btn" data-act="copySend" data-link="${esc(listLink(x.code))}">Copiar enlace</button><button class="btn ghost" data-act="forgetSent" data-code="${esc(x.code)}" data-confirm>Quitar de aquí</button></div></div>`).join("")}</div>`;
+  if (!REMOTE) return;
+  for (const x of sent) {
+    try {
+      const d = await rpc("lista_leer", { p_code: x.code });
+      const el = out.querySelector(`[data-sent="${x.code}"] .sentst`);
+      if (!el) continue;
+      if (!d) { el.textContent = "Esta lista ya no existe"; continue; }
+      const done = d.items.filter(i => i.done).length;
+      el.innerHTML = `<b class="num">${done} de ${d.items.length}</b> cogidos · enviada el ${new Date(d.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}`;
+    } catch (e) {}
+  }
+}
+
 function shareLink() { return code ? location.origin + location.pathname + "?c=" + code : ""; }
 function cartText() {
   const groups = new Map();
@@ -352,7 +381,7 @@ function render() {
     document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
     if (tab === "cat") renderCatalog();
     if (tab === "cart") renderCart();
-    if (tab === "saved") renderSaved();
+    if (tab === "saved") { renderSaved(); renderSent(); }
     if (tab === "share") renderShare();
     renderBar();
   } catch (e) { showRecovery(e); }
@@ -434,6 +463,27 @@ document.addEventListener("click", async e => {
     case "overB": { if (!S.cart.length) return; act({ t: "saved", items: S.saved.map(x => x.id === b.dataset.id ? { ...x, items: S.cart.map(snapshot) } : x) }); toast("Cesta sustituida"); return; }
     case "delB": act({ t: "saved", items: S.saved.filter(x => x.id !== b.dataset.id) }); return;
     case "copyLink": copy(shareLink(), "Enlace copiado"); return;
+    case "sendList": {
+      if (!S.cart.length) return;
+      if (!REMOTE) { toast("Falta configurar Supabase"); return; }
+      const name = $("listName").value.trim() || "Lista de la compra";
+      const items = S.cart.map(raw => { const it = live(raw); return { k: it.k, st: storeName(it), n: it.n, q: it.q, w: !!it.w, lt: Math.round(lineTotal(it) * 100) / 100, bd: it.bd || "", u: imgUrl(it.s, it), done: false }; });
+      b.disabled = true; b.textContent = "Creando…";
+      try {
+        const c = await rpc("lista_crear", { p_name: name, p_items: items });
+        const sent = lsGet(LS.sent, []);
+        sent.unshift({ code: c, name, created: Date.now(), n: items.length, total: items.reduce((a, i) => a + i.lt, 0) });
+        lsSet(LS.sent, sent.slice(0, 30));
+        $("sendOut").innerHTML = sendLinkHTML(c);
+        $("listName").value = "";
+        toast("Lista creada: ya puedes enviarla");
+      } catch (err) { toast("No se pudo crear la lista; revisa la conexión"); }
+      b.disabled = false; b.textContent = "Crear enlace";
+      return;
+    }
+    case "copySend": copy(b.dataset.link, "Enlace copiado"); return;
+    case "shareSend": try { await navigator.share({ title: "Lista de la compra", url: b.dataset.link }); } catch (err) {} return;
+    case "forgetSent": lsSet(LS.sent, lsGet(LS.sent, []).filter(x => x.code !== b.dataset.code)); renderSent(); return;
     case "shareLink": try { await navigator.share({ title: "Mi Cesta", text: "Mi lista de la compra", url: shareLink() }); } catch (err) {} return;
     case "copyText": copy(cartText(), "Lista copiada"); return;
     case "retrySync": setSync("loading"); await flush(); await pull(); render(); return;

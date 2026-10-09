@@ -1,10 +1,12 @@
-const VERSION = "mi-cesta-v1";
+const VERSION = "mi-cesta-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./config.js",
+  "./lista.html",
+  "./lista.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
@@ -35,7 +37,7 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
   event.respondWith((async () => {
     const cache = await caches.open(VERSION);
-    const key = req.mode === "navigate" ? "./index.html" : req;
+    const key = req.mode === "navigate" ? url.origin + url.pathname : req;
     const cached = await cache.match(key, { ignoreSearch: req.mode === "navigate" });
     const network = fetch(req).then(res => {
       if (res && res.ok) cache.put(key, res.clone()).catch(() => {});

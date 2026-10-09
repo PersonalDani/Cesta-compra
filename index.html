@@ -53,6 +53,12 @@
           <button class="btn" data-act="removeDone">Quitar lo marcado</button>
           <button class="btn danger" data-act="clearCart" data-confirm>Vaciar cesta</button>
         </div>
+        <div class="form" id="sendForm">
+          <h3>Enviar como lista</h3>
+          <p class="note">Manda esta cesta como checklist. Quien la reciba la abre sin instalar nada y va marcando lo que coge; tú lo ves en «Mis cestas».</p>
+          <div class="inline"><input id="listName" placeholder="Nombre (p. ej. Compra para mamá)"><button class="btn primary" data-act="sendList">Crear enlace</button></div>
+          <div id="sendOut"></div>
+        </div>
       </div>
       <form class="form" id="manual">
         <h3>Añadir otro producto</h3>
@@ -70,6 +76,7 @@
     <section id="v-saved" class="panel" hidden>
       <p class="note">Una cesta guardada recuerda qué productos y cuántos. Al usarla se cogen los precios del catálogo de ahora.</p>
       <div id="savedOut"></div>
+      <div id="sentOut"></div>
     </section>
 
     <section id="v-share" class="panel" hidden>
