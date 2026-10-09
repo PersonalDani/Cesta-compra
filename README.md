@@ -16,12 +16,10 @@ Lista de la compra con los catálogos de **Dia** y **Ahorramas**: productos por 
 ## Puesta en marcha
 
 1. **Supabase**: ejecuta `supabase/schema.sql` en *SQL Editor* (ya hecho). La URL y la clave *publishable* están en `config.js`.
-2. **Repositorio**: crea un repo (por ejemplo `mi-cesta`) y sube todo el contenido de esta carpeta, incluida la carpeta oculta `.github`.
+2. **Repositorio**: `PersonalDani/Cesta-compra`, con todo el contenido de esta carpeta, incluida la carpeta oculta `.github`.
 3. **GitHub Pages**: *Settings → Pages → Build and deployment → Deploy from a branch →* rama `main`, carpeta `/ (root)`.
 4. **Permisos de las Actions**: *Settings → Actions → General → Workflow permissions →* **Read and write permissions**.
-5. **Secrets para el keepalive**: *Settings → Secrets and variables → Actions → New repository secret*:
-   - `SUPABASE_URL` = `https://kzgkcnwisqxcrqzibuca.supabase.co`
-   - `SUPABASE_KEY` = la clave *publishable* (`sb_publishable_…`)
+5. **Keepalive**: no necesita secrets; lee la URL y la clave *publishable* de `config.js`.
 6. **Primera actualización de precios**: *Actions → Actualizar precios → Run workflow*. Tarda alrededor de una hora y además rellena las fotos de Ahorramas, que en el catálogo inicial todavía no están.
 
 ## Actualizar precios a mano
