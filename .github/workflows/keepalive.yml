@@ -13,13 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+
       - name: Llamar a la base de datos
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
+          SUPABASE_URL=$(sed -n 's/^export const SUPABASE_URL = "\(.*\)";$/\1/p' config.js)
+          SUPABASE_KEY=$(sed -n 's/^export const SUPABASE_KEY = "\(.*\)";$/\1/p' config.js)
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
-            echo "Faltan los secrets SUPABASE_URL y SUPABASE_KEY" >&2
+            echo "No se encontraron SUPABASE_URL y SUPABASE_KEY en config.js" >&2
             exit 1
           fi
           curl --fail --silent --show-error --retry 3 --retry-delay 10 \
