@@ -1,0 +1,15 @@
+{
+  "name": "Mi Cesta",
+  "short_name": "Mi Cesta",
+  "description": "Lista de la compra con los catálogos de Dia y Ahorramas, subtotal y cestas compartidas.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F5EF",
+  "theme_color": "#1E6A49",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "mi-cesta",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "precios": "node scripts/scrape.mjs",
+    "test": "node scripts/test-parse.mjs"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
